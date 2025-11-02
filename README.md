@@ -1,17 +1,23 @@
 
-# DC Status API Client
+# 🐍 DC Status API Client
 
 This repository hosts the installable Python client for the DC Status API. It's a lightweight, background-service that sends periodic heartbeats from your Python application to your API instance.
 
-The source code for this client and the API is kept in a private repository.
+> **Note**: The source code for this client and the API is kept in a private repository.
 
 ---
 
-## Installation
+## 📦 Installation
+
+You have two options to install the client.
+
+### Method 1: Using `requirements.txt` (Recommended)
+
+This is the standard way to manage dependencies in a Python project. It ensures that anyone who sets up your project gets the correct version of the client.
 
 **1. Add to `requirements.txt`**
 
-Add the following line to your project's `requirements.txt` file. This ensures the client is installed along with your other dependencies.
+Add the following line to your project's `requirements.txt` file:
 
 ```
 # requirements.txt
@@ -22,11 +28,17 @@ Add the following line to your project's `requirements.txt` file. This ensures t
 https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
 ```
 
-Then, run `pip install -r requirements.txt`.
+**2. Install Dependencies**
 
-**2. Manual Installation**
+Run the following command in your terminal. This will read the `requirements.txt` file and install all listed packages at once.
 
-Alternatively, you can install the package directly with this command:
+```bash
+pip install -r requirements.txt
+```
+
+### Method 2: Direct URL Installation
+
+For a quick setup or for testing without a `requirements.txt` file, you can install the package directly from the URL.
 
 ```bash
 pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
@@ -34,9 +46,9 @@ pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/d
 
 ---
 
-## Configuration & Usage
+## 🚀 Quickstart Usage
 
-The client requires minimal configuration. You only need to provide your API's URL. The client automatically detects the Bot Name, Bot ID, and Application ID after connecting to Discord.
+Import the client and add the `start()` call to your bot's `on_ready` event. The client automatically detects the Bot Name, Bot ID, and Application ID after connecting to Discord.
 
 **1. Configure your `.env` file**
 
@@ -59,7 +71,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
-import dcstatus_client # Import the client
+import dcstatus_client # 1. Import the client
 
 load_dotenv()
 
@@ -72,7 +84,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f'Bot "{bot.user}" is online.')
+    print(f'Bot "{bot.user}" is online. 🤖')
 
     # --- Start the Status Client ---
     if STATUS_API_URL:
@@ -84,11 +96,11 @@ async def on_ready():
                 application_id=str(bot.application_id), # Fetched automatically
                 bot_name=bot.user.name                 # Fetched automatically
             )
-            print("Heartbeat client is running in the background.")
+            print("Heartbeat client is running in the background. ❤️")
         except Exception as e:
             print(f"ERROR starting heartbeat client: {e}")
     else:
-        print("STATUS_API_URL not set. Heartbeat client is disabled.")
+        print("STATUS_API_URL not set. Heartbeat client is disabled. 💔")
 
 # --- Run the Bot ---
 if __name__ == "__main__":
