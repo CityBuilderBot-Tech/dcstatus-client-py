@@ -1,7 +1,7 @@
 
 # DC Status API Client
 
-This repository hosts the installable Python client for the DC Status API. The client is designed to be a lightweight, background-service that sends periodic heartbeats from your Python application to your DC Status API instance.
+This repository hosts the installable Python client for the DC Status API. It's a lightweight, background-service that sends periodic heartbeats from your Python application to your API instance.
 
 The source code for this client and the API is kept in a private repository.
 
@@ -9,61 +9,74 @@ The source code for this client and the API is kept in a private repository.
 
 ## Installation
 
-The client can be installed directly from this repository's releases using `pip`. No cloning is required.
+The recommended way to install the client is by adding it to your project's `requirements.txt` file.
+
+### 1. Create `requirements.txt`
+
+Create a file named `requirements.txt` in your bot's main directory and add the following content. This file lists all Python packages your project depends on.
+
+```
+# requirements.txt
+
+# Core Discord library for bot functionality
+discord.py
+
+# Required by discord.py for voice communication
+PyNaCl
+
+# Modern HTTP client for making API requests (e.g., to a TTS service)
+httpx
+
+# Downloads video/audio streams (e.g., from YouTube)
+yt-dlp
+
+# Utility to load secrets like your bot token from a .env file
+python-dotenv
+
+# Custom DC Status API Client from this GitHub Release
+https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
+```
+
+### 2. Install Dependencies
+
+Run the following command in your terminal. This will read the `requirements.txt` file and install all listed packages at once.
 
 ```bash
-# Replace v0.1.0 with the desired version number
-pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/v0.1.0/dcstatus-client-0.1.0.tar.gz
+pip install -r requirements.txt
 ```
 
-## Usage
+---
 
-Using the client is designed to be as simple as possible. Import the package and call the `start()` function once when your application starts.
+## Quickstart Usage
+
+Import the client and add the `start()` call to your bot's `on_ready` event. The client will automatically use your bot's user ID and application ID.
 
 ```python
-import dcstatus_client
-import time
+import discord
+from discord.ext import commands
+import dcstatus_client # 1. Import the client
 
-# --- Configuration ---
-# The URL of your deployed DC Status API
-API_URL = "https://your-api.coolify.app"
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Your bot's specific identifiers
-BOT_ID = "123456789012345678"
-APP_ID = "098765432109876543"
-BOT_NAME = "MyAwesomeBot"
+@bot.event
+async def on_ready():
+    print(f'Bot "{bot.user}" is online.')
 
+    # 2. Start the heartbeat client
+    try:
+        dcstatus_client.start(
+            # --- CONFIGURATION ---
+            api_url="https://your-api.coolify.app",  # <-- Enter your API URL here
+            bot_name="My Awesome Bot",             # <-- Enter the name for your bot here
+            # ---------------------
+            bot_id=str(bot.user.id),
+            application_id=str(bot.application_id)
+        )
+        print("Heartbeat client is running in the background.")
+    except Exception as e:
+        print(f"ERROR starting heartbeat client: {e}")
 
-# --- Application Start ---
-
-print("Starting the main application...")
-
-# Initialize and start the heartbeat client in the background.
-# This only needs to be called once.
-dcstatus_client.start(
-    api_url=API_URL,
-    bot_id=BOT_ID,
-    application_id=APP_ID,
-    bot_name=BOT_NAME
-)
-
-print(f"Heartbeat client for '{BOT_NAME}' is running in the background.")
-
-# Your main application logic goes here.
-# For example, a loop that keeps your bot alive.
-try:
-    while True:
-        print("Main application is doing work...")
-        time.sleep(60)
-except KeyboardInterrupt:
-    print("\nShutting down main application.")
-    # The client will be stopped automatically on exit.
-
+# Replace with your actual bot token
+bot.run("YOUR_DISCORD_BOT_TOKEN")
 ```
-
-### How it Works
-
-- The `start()` function launches a separate, lightweight background thread.
-- This thread sends a heartbeat to your API every 15 seconds.
-- The client automatically calculates the bot's uptime.
-- When your main application exits or crashes, the client's thread is terminated automatically, and no more heartbeats are sent.
