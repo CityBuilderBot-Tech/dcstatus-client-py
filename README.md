@@ -9,15 +9,9 @@ The source code for this client and the API is kept in a private repository.
 
 ## Installation
 
-You have two options to install the client.
-
-### Method 1: Using `requirements.txt` (Recommended)
-
-This is the standard way to manage dependencies in a Python project. It ensures that anyone who sets up your project gets the correct version of the client.
-
 **1. Add to `requirements.txt`**
 
-Add the following line to your project's `requirements.txt` file:
+Add the following line to your project's `requirements.txt` file. This ensures the client is installed along with your other dependencies.
 
 ```
 # requirements.txt
@@ -28,17 +22,11 @@ Add the following line to your project's `requirements.txt` file:
 https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
 ```
 
-**2. Install Dependencies**
+Then, run `pip install -r requirements.txt`.
 
-Run the following command in your terminal. This will install all packages listed in the file.
+**2. Manual Installation**
 
-```bash
-pip install -r requirements.txt
-```
-
-### Method 2: Direct URL Installation
-
-For a quick setup or for testing without a `requirements.txt` file, you can install the package directly from the URL.
+Alternatively, you can install the package directly with this command:
 
 ```bash
 pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
@@ -46,14 +34,38 @@ pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/d
 
 ---
 
-## Quickstart Usage
+## Configuration & Usage
 
-Import the client and add the `start()` call to your bot's `on_ready` event. The client will automatically use your bot's user ID and application ID.
+The client requires minimal configuration. You only need to provide your API's URL. The client automatically detects the Bot Name, Bot ID, and Application ID after connecting to Discord.
+
+**1. Configure your `.env` file**
+
+Make sure you have the URL to your API instance set.
+
+```.env
+# Your Discord Bot Token
+DISCORD_BOT_TOKEN="your_secret_bot_token_here"
+
+# The full URL of your deployed DC Status API
+STATUS_API_URL="https://your-api.coolify.app"
+```
+
+**2. Update your Bot Code**
+
+Import the client and call the `start()` function once in your bot's `on_ready` event.
 
 ```python
 import discord
 from discord.ext import commands
-import dcstatus_client # 1. Import the client
+from dotenv import load_dotenv
+import os
+import dcstatus_client # Import the client
+
+load_dotenv()
+
+# --- Load Configuration ---
+BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+STATUS_API_URL = os.getenv('STATUS_API_URL')
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -62,20 +74,23 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f'Bot "{bot.user}" is online.')
 
-    # 2. Start the heartbeat client
-    try:
-        dcstatus_client.start(
-            # --- CONFIGURATION ---
-            api_url="https://your-api.coolify.app",  # <-- Enter your API URL here
-            bot_name="My Awesome Bot",             # <-- Enter the name for your bot here
-            # ---------------------
-            bot_id=str(bot.user.id),
-            application_id=str(bot.application_id)
-        )
-        print("Heartbeat client is running in the background.")
-    except Exception as e:
-        print(f"ERROR starting heartbeat client: {e}")
+    # --- Start the Status Client ---
+    if STATUS_API_URL:
+        print("Status API URL found. Starting heartbeat client...")
+        try:
+            dcstatus_client.start(
+                api_url=STATUS_API_URL,
+                bot_id=str(bot.user.id),              # Fetched automatically
+                application_id=str(bot.application_id), # Fetched automatically
+                bot_name=bot.user.name                 # Fetched automatically
+            )
+            print("Heartbeat client is running in the background.")
+        except Exception as e:
+            print(f"ERROR starting heartbeat client: {e}")
+    else:
+        print("STATUS_API_URL not set. Heartbeat client is disabled.")
 
-# Replace with your actual bot token
-bot.run("YOUR_DISCORD_BOT_TOKEN")
+# --- Run the Bot ---
+if __name__ == "__main__":
+    bot.run(BOT_TOKEN)
 ```
