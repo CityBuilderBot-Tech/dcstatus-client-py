@@ -9,28 +9,39 @@ The source code for this client and the API is kept in a private repository.
 
 ## Installation
 
-The recommended way to install the client is by adding it to your project's `requirements.txt` file.
+You have two options to install the client.
 
-### 1. Create `requirements.txt`
+### Method 1: Using `requirements.txt` (Recommended)
 
-Create a file named `requirements.txt` in your bot's main directory and add the following content. This file lists all Python packages your project depends on.
+This is the standard way to manage dependencies in a Python project. It ensures that anyone who sets up your project gets the correct version of the client.
+
+**1. Add to `requirements.txt`**
+
+Add the following line to your project's `requirements.txt` file:
 
 ```
 # requirements.txt
 
-# Core Discord library for bot functionality
-discord.py
+# ... your other dependencies like discord.py ...
 
-# Custom DC Status API Client from this GitHub Release
+# Custom DC Status API Client from GitHub Release
 https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
 ```
 
-### 2. Install Dependencies
+**2. Install Dependencies**
 
-Run the following command in your terminal. This will read the `requirements.txt` file and install all listed packages at once.
+Run the following command in your terminal. This will install all packages listed in the file.
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Method 2: Direct URL Installation
+
+For a quick setup or for testing without a `requirements.txt` file, you can install the package directly from the URL.
+
+```bash
+pip install https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
 ```
 
 ---
