@@ -21,18 +21,6 @@ Create a file named `requirements.txt` in your bot's main directory and add the 
 # Core Discord library for bot functionality
 discord.py
 
-# Required by discord.py for voice communication
-PyNaCl
-
-# Modern HTTP client for making API requests (e.g., to a TTS service)
-httpx
-
-# Downloads video/audio streams (e.g., from YouTube)
-yt-dlp
-
-# Utility to load secrets like your bot token from a .env file
-python-dotenv
-
 # Custom DC Status API Client from this GitHub Release
 https://github.com/CityBuilderBot-Tech/dcstatus-client-py/releases/download/pip/dcstatus_client-pip.tar.gz
 ```
